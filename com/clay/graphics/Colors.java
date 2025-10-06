@@ -1,5 +1,7 @@
 package com.clay.graphics;
 
+import java.awt.*;
+
 public class Colors {
     private int value;
 
@@ -22,15 +24,49 @@ public class Colors {
     public static final int PURPLE = 0xFF800080;
     public static final int ORANGE = 0xFFFFA500;
 
-    public Colors(int value) {
-        this.value = value;
+    public Colors(int color) {
+        int alpha = ((color >> 24) & 0xFF);
+        if (alpha == 0) {
+            this.value = 0xFF000000 | color;
+        } else {
+            this.value = color;
+        }
+    }
+
+    public Colors(int red, int green, int blue) {
+        this(255, red, green, blue);
+    }
+
+    public Colors(int alpha, int red, int green, int blue) {
+        value = ((alpha & 0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | ((blue & 0xFF));
+    }
+
+    public Colors(String color) {
+        color = color.trim().toLowerCase();
+        if (color.startsWith("#")) {
+            color = color.substring(1);
+            if (color.length() == 6) {
+                // #rrggbb
+                value = 0xFF000000 | Integer.parseInt(color, 16);
+            } else if (color.length() == 8) {
+                // #aarrggbb
+                value = (int) Long.parseLong(color, 16);
+            }
+        } else if (color.startsWith("0x")) {
+            color = color.substring(2);
+            if (color.length() == 6) {
+                // 0xrrggbb
+                value = 0xFF000000 | Integer.parseInt(color, 16);
+            } else if (color.length() == 8) {
+                // 0xaarrggbb
+                value = (int) Long.parseLong(color, 16);
+            }
+        }
+        throw new IllegalArgumentException("Invalid color format: " + color);
     }
 
     public static int argb(int alpha, int red, int green, int blue) {
-        return ((alpha & 0xFF) << 24) |
-                ((red & 0xFF) << 16) |
-                ((green & 0xFF) << 8) |
-                ((blue & 0xFF));
+        return ((alpha & 0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | ((blue & 0xFF));
     }
 
     public static int rgb(int red, int green, int blue) {
@@ -39,8 +75,6 @@ public class Colors {
 
     public Color toAWTColor() {
         return new Color(getRed(), getGreen(), getBlue(), getAlpha());
-
-
     }
 
     public int getRGB() {
@@ -62,4 +96,9 @@ public class Colors {
     public int getBlue() {
         return (getRGB()) & 0xFF;
     }
+
+    public String toHexString() {
+        return String.format("#%08X", value);
+    }
+
 }
