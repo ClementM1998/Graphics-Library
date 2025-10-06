@@ -15,9 +15,6 @@ public class Test {
         while (window.IsAvailableWindow()) {
             graphic.ClearWindow();
 
-            graphic.SetColor(Colors.GREEN);
-            graphic.Circle(100, 100, 30);
-
             graphic.RefreshWindow();
         }
 
